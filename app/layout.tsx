@@ -4,10 +4,10 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Acme Dashboard',
-    default: 'Acme Dashboard',
+    template: '%s | Ali Dashboard',
+    default: 'Ali Dashboard',
   },
-  description: 'The official Next.js Learn Dashboard built with the App Router.',
+  description: 'A modern dashboard application built with Next.js and React.',
 };
 
 export default function RootLayout({
