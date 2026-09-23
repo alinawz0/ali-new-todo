@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
+import GitHub from 'next-auth/providers/github';
 import { authConfig } from './auth.config';
 import { z } from 'zod';
 import bcrypt from 'bcrypt';
@@ -14,6 +15,11 @@ export const {
   ...authConfig,
 
   providers: [
+    GitHub({
+      clientId: process.env.AUTH_GITHUB_ID,
+      clientSecret: process.env.AUTH_GITHUB_SECRET,
+    }),
+
     Credentials({
       async authorize(credentials) {
         const parsedCredentials = z
