@@ -67,6 +67,22 @@ async function seedCustomers() {
     );
   `;
 
+  await sql`
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1
+        FROM pg_constraint
+        WHERE conname = 'customers_email_key'
+          AND conrelid = 'customers'::regclass
+      ) THEN
+        ALTER TABLE customers
+        ADD CONSTRAINT customers_email_key UNIQUE (email);
+      END IF;
+    END
+    $$;
+  `;
+
   const insertedCustomers = await Promise.all(
     customers.map(
       (customer) => sql`

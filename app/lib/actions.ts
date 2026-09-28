@@ -167,6 +167,17 @@ export async function createCustomer(
   } catch (error) {
     console.error('Database Error:', error);
 
+    if (
+      error &&
+      typeof error === 'object' &&
+      'code' in error &&
+      error.code === '23505'
+    ) {
+      return {
+        message: 'A customer with this email already exists.',
+      };
+    }
+
     return {
       message: 'Database Error: Failed to Create Customer.',
     };
@@ -209,6 +220,17 @@ export async function updateCustomer(
     `;
   } catch (error) {
     console.error('Database Error:', error);
+
+    if (
+      error &&
+      typeof error === 'object' &&
+      'code' in error &&
+      error.code === '23505'
+    ) {
+      return {
+        message: 'A customer with this email already exists.',
+      };
+    }
 
     return {
       message: 'Database Error: Failed to Update Customer.',
