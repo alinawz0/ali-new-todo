@@ -24,7 +24,10 @@ export default function Form({
     errors: {},
   };
 
-  const [state, formAction] = useActionState(createInvoice, initialState);
+  const [state, formAction] = useActionState(
+    createInvoice,
+    initialState,
+  );
 
   return (
     <form action={formAction}>
@@ -68,7 +71,10 @@ export default function Form({
           >
             {state.errors?.customerId &&
               state.errors.customerId.map((error: string) => (
-                <p className="mt-2 text-sm text-red-500" key={error}>
+                <p
+                  className="mt-2 text-sm text-red-500"
+                  key={error}
+                >
                   {error}
                 </p>
               ))}
@@ -107,7 +113,10 @@ export default function Form({
           >
             {state.errors?.amount &&
               state.errors.amount.map((error: string) => (
-                <p className="mt-2 text-sm text-red-500" key={error}>
+                <p
+                  className="mt-2 text-sm text-red-500"
+                  key={error}
+                >
                   {error}
                 </p>
               ))}
@@ -137,7 +146,8 @@ export default function Form({
                   htmlFor="pending"
                   className="ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600"
                 >
-                  Pending <ClockIcon className="h-4 w-4" />
+                  Pending
+                  <ClockIcon className="h-4 w-4" />
                 </label>
               </div>
 
@@ -155,7 +165,8 @@ export default function Form({
                   htmlFor="paid"
                   className="ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-green-500 px-3 py-1.5 text-xs font-medium text-white"
                 >
-                  Paid <CheckIcon className="h-4 w-4" />
+                  Paid
+                  <CheckIcon className="h-4 w-4" />
                 </label>
               </div>
 
@@ -169,7 +180,10 @@ export default function Form({
           >
             {state.errors?.status &&
               state.errors.status.map((error: string) => (
-                <p className="mt-2 text-sm text-red-500" key={error}>
+                <p
+                  className="mt-2 text-sm text-red-500"
+                  key={error}
+                >
                   {error}
                 </p>
               ))}

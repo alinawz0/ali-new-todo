@@ -116,6 +116,135 @@ export async function deleteInvoice(id: string) {
   revalidatePath('/dashboard/invoices');
 }
 
+
+/* =========================
+   CUSTOMER ACTIONS
+========================= */
+
+const CreateCustomer = z.object({
+  name: z.string().min(1, {
+    message: 'Please enter a customer name.',
+  }),
+
+  email: z.string().email({
+    message: 'Please enter a valid email address.',
+  }),
+});
+
+export type CustomerState = {
+  errors?: {
+    name?: string[];
+    email?: string[];
+  };
+  message?: string | null;
+};
+
+export async function createCustomer(
+  prevState: CustomerState,
+  formData: FormData,
+) {
+  const validatedFields = CreateCustomer.safeParse({
+    name: formData.get('name'),
+    email: formData.get('email'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Create Customer.',
+    };
+  }
+
+  const { name, email } = validatedFields.data;
+
+  try {
+    await sql`
+      INSERT INTO customers (name, email, image_url)
+      VALUES (${name}, ${email}, '/customers/lee-robinson.png')
+    `;
+  } catch (error) {
+    console.error('Database Error:', error);
+
+    return {
+      message: 'Database Error: Failed to Create Customer.',
+    };
+  }
+
+  revalidatePath('/dashboard/customers');
+  redirect('/dashboard/customers');
+}
+
+
+/* =========================
+   UPDATE CUSTOMER
+========================= */
+
+export async function updateCustomer(
+  id: string,
+  prevState: CustomerState,
+  formData: FormData,
+) {
+  const validatedFields = CreateCustomer.safeParse({
+    name: formData.get('name'),
+    email: formData.get('email'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Update Customer.',
+    };
+  }
+
+  const { name, email } = validatedFields.data;
+
+  try {
+    await sql`
+      UPDATE customers
+      SET name = ${name},
+          email = ${email}
+      WHERE id = ${id}
+    `;
+  } catch (error) {
+    console.error('Database Error:', error);
+
+    return {
+      message: 'Database Error: Failed to Update Customer.',
+    };
+  }
+
+  revalidatePath('/dashboard/customers');
+  revalidatePath(`/dashboard/customers/${id}`);
+
+  redirect(`/dashboard/customers/${id}`);
+}
+
+
+/* =========================
+   DELETE CUSTOMER
+========================= */
+
+export async function deleteCustomer(id: string) {
+  try {
+    await sql`
+      DELETE FROM customers
+      WHERE id = ${id}
+    `;
+  } catch (error) {
+    console.error('Database Error:', error);
+
+    throw new Error('Failed to Delete Customer.');
+  }
+
+  revalidatePath('/dashboard/customers');
+  redirect('/dashboard/customers');
+}
+
+
+/* =========================
+   AUTHENTICATION
+========================= */
+
 export async function authenticate(
   prevState: string | undefined,
   formData: FormData,
