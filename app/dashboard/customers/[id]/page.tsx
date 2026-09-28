@@ -1,30 +1,35 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { fetchCustomerById } from '@/app/lib/data';
+import { notFound } from 'next/navigation';
+
+import {
+  fetchCustomerById,
+  fetchCustomerInvoices,
+} from '@/app/lib/data';
+
 import DeleteButton from '@/app/ui/customers/delete-button';
 
 export default async function Page(props: {
   params: Promise<{ id: string }>;
 }) {
   const params = await props.params;
+
+  const isValidUuid =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      params.id,
+    );
+
+  if (!isValidUuid) {
+    notFound();
+  }
+
   const customer = await fetchCustomerById(params.id);
 
   if (!customer) {
-    return (
-      <main>
-        <h1 className="mb-8 text-xl font-semibold md:text-2xl">
-          Customer not found
-        </h1>
-
-        <Link
-          href="/dashboard/customers"
-          className="text-sm text-blue-600 hover:underline"
-        >
-          ← Back to Customers
-        </Link>
-      </main>
-    );
+    notFound();
   }
+
+  const invoices = await fetchCustomerInvoices(params.id);
 
   return (
     <main>
@@ -112,6 +117,61 @@ export default async function Page(props: {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="mt-8">
+        <h2 className="mb-4 text-xl font-semibold">
+          Invoice History
+        </h2>
+
+        {invoices.length === 0 ? (
+          <div className="rounded-md bg-gray-50 p-6 text-center">
+            <p className="text-sm text-gray-500">
+              No invoices found.
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto rounded-md bg-gray-50 p-2">
+            <table className="min-w-full text-sm">
+              <thead className="text-left">
+                <tr>
+                  <th className="px-4 py-4 font-medium">
+                    Date
+                  </th>
+
+                  <th className="px-4 py-4 font-medium">
+                    Amount
+                  </th>
+
+                  <th className="px-4 py-4 font-medium">
+                    Status
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody className="divide-y divide-gray-200">
+                {invoices.map((invoice) => (
+                  <tr
+                    key={invoice.id}
+                    className="bg-white"
+                  >
+                    <td className="whitespace-nowrap px-4 py-4">
+                      {invoice.date}
+                    </td>
+
+                    <td className="whitespace-nowrap px-4 py-4">
+                      {invoice.amount}
+                    </td>
+
+                    <td className="whitespace-nowrap px-4 py-4">
+                      {invoice.status}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </main>
   );

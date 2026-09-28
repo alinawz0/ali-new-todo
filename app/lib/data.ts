@@ -291,6 +291,38 @@ export async function fetchCustomerById(id: string) {
   }
 }
 
+export async function fetchCustomerInvoices(
+  customerId: string,
+) {
+  try {
+    const data = await sql<{
+      id: string;
+      amount: number;
+      status: string;
+      date: string | Date;
+    }[]>`
+      SELECT
+        invoices.id,
+        invoices.amount,
+        invoices.status,
+        invoices.date
+      FROM invoices
+      WHERE invoices.customer_id = ${customerId}
+      ORDER BY invoices.date DESC
+    `;
+
+    return data.map((invoice) => ({
+      id: invoice.id,
+      amount: formatCurrency(invoice.amount),
+      status: invoice.status,
+      date: new Date(invoice.date).toLocaleDateString(),
+    }));
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch customer invoices.');
+  }
+}
+
 export async function fetchFilteredCustomers(
   query: string,
   currentPage: number,
