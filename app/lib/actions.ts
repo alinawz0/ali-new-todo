@@ -74,6 +74,8 @@ export async function createInvoice(
       VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
     `;
   } catch (error) {
+    console.error('Database Error:', error);
+
     return {
       message: 'Database Error: Failed to Create Invoice.',
     };
@@ -226,6 +228,20 @@ export async function updateCustomer(
 
 export async function deleteCustomer(id: string) {
   try {
+    const invoices = await sql`
+      SELECT id
+      FROM invoices
+      WHERE customer_id = ${id}
+      LIMIT 1
+    `;
+
+    if (invoices.length > 0) {
+      return {
+        message:
+          'Cannot delete this customer because they have invoices.',
+      };
+    }
+
     await sql`
       DELETE FROM customers
       WHERE id = ${id}
@@ -233,7 +249,9 @@ export async function deleteCustomer(id: string) {
   } catch (error) {
     console.error('Database Error:', error);
 
-    throw new Error('Failed to Delete Customer.');
+    return {
+      message: 'Failed to delete customer.',
+    };
   }
 
   revalidatePath('/dashboard/customers');

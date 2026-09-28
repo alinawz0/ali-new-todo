@@ -102,10 +102,21 @@ export async function fetchCardData() {
       invoiceStatusPromise,
     ]);
 
-    const numberOfInvoices = Number(data[0][0].count ?? '0');
-    const numberOfCustomers = Number(data[1][0].count ?? '0');
-    const totalPaidInvoices = formatCurrency(data[2][0].paid ?? '0');
-    const totalPendingInvoices = formatCurrency(data[2][0].pending ?? '0');
+    const numberOfInvoices = Number(
+      data[0][0].count ?? '0',
+    );
+
+    const numberOfCustomers = Number(
+      data[1][0].count ?? '0',
+    );
+
+    const totalPaidInvoices = formatCurrency(
+      data[2][0].paid ?? '0',
+    );
+
+    const totalPendingInvoices = formatCurrency(
+      data[2][0].pending ?? '0',
+    );
 
     return {
       numberOfCustomers,
@@ -178,7 +189,9 @@ export async function fetchInvoicesPages(query: string) {
     return totalPages;
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch total number of invoices.');
+    throw new Error(
+      'Failed to fetch total number of invoices.',
+    );
   }
 }
 
@@ -265,8 +278,12 @@ export async function fetchCustomerById(id: string) {
 
     return {
       ...customer,
-      total_pending: formatCurrency(customer.total_pending),
-      total_paid: formatCurrency(customer.total_paid),
+      total_pending: formatCurrency(
+        customer.total_pending,
+      ),
+      total_paid: formatCurrency(
+        customer.total_paid,
+      ),
     };
   } catch (error) {
     console.error('Database Error:', error);
@@ -320,8 +337,12 @@ export async function fetchFilteredCustomers(
 
     const customers = data.map((customer) => ({
       ...customer,
-      total_pending: formatCurrency(customer.total_pending),
-      total_paid: formatCurrency(customer.total_paid),
+      total_pending: formatCurrency(
+        customer.total_pending,
+      ),
+      total_paid: formatCurrency(
+        customer.total_paid,
+      ),
     }));
 
     return customers;
@@ -348,7 +369,9 @@ export async function fetchCustomersPages(query: string) {
     return totalPages;
   } catch (err) {
     console.error('Database Error:', err);
-    throw new Error('Failed to fetch total number of customers.');
+    throw new Error(
+      'Failed to fetch total number of customers.',
+    );
   }
 }
 
