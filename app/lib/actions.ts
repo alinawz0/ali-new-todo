@@ -1,11 +1,11 @@
+
 'use server';
 
 import { z } from 'zod';
 import postgres from 'postgres';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { signIn } from '../../auth';
-import { AuthError } from 'next-auth';
+import { createClient } from '@/app/lib/server';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -118,7 +118,6 @@ export async function deleteInvoice(id: string) {
   revalidatePath('/dashboard/invoices');
 }
 
-
 /* =========================
    CUSTOMER ACTIONS
 ========================= */
@@ -187,7 +186,6 @@ export async function createCustomer(
   redirect('/dashboard/customers');
 }
 
-
 /* =========================
    UPDATE CUSTOMER
 ========================= */
@@ -243,7 +241,6 @@ export async function updateCustomer(
   redirect(`/dashboard/customers/${id}`);
 }
 
-
 /* =========================
    DELETE CUSTOMER
 ========================= */
@@ -280,7 +277,6 @@ export async function deleteCustomer(id: string) {
   redirect('/dashboard/customers');
 }
 
-
 /* =========================
    AUTHENTICATION
 ========================= */
@@ -289,18 +285,39 @@ export async function authenticate(
   prevState: string | undefined,
   formData: FormData,
 ) {
-  try {
-    await signIn('credentials', formData);
-  } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case 'CredentialsSignin':
-          return 'Invalid credentials.';
-        default:
-          return 'Something went wrong.';
-      }
-    }
+  const supabase = await createClient();
 
-    throw error;
+  const email = formData.get('email');
+  const password = formData.get('password');
+
+  if (
+    typeof email !== 'string' ||
+    typeof password !== 'string' ||
+    !email ||
+    !password
+  ) {
+    return 'Please enter your email and password.';
   }
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    return 'Invalid email or password.';
+  }
+
+  revalidatePath('/', 'layout');
+
+  const redirectTo = formData.get('redirectTo');
+
+  const destination =
+    typeof redirectTo === 'string' &&
+    redirectTo.startsWith('/') &&
+    !redirectTo.startsWith('//')
+      ? redirectTo
+      : '/dashboard';
+
+  redirect(destination);
 }
