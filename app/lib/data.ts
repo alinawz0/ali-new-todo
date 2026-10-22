@@ -1,4 +1,3 @@
-
 import postgres from 'postgres';
 
 import {
@@ -176,6 +175,14 @@ export async function fetchInvoicesPages(query: string) {
 }
 
 export async function fetchInvoiceById(id: string) {
+  // Invalid UUIDs should return no invoice instead of querying the database.
+  const isValidUUID =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+
+  if (!isValidUUID) {
+    return undefined;
+  }
+
   try {
     const data = await sql<InvoiceForm[]>`
       SELECT
