@@ -23,10 +23,7 @@ export default function DeleteButton({
   const [state, formAction, isPending] = useActionState<
     CustomerState,
     FormData
-  >(
-    deleteCustomerWithId,
-    initialState,
-  );
+  >(deleteCustomerWithId, initialState);
 
   return (
     <div className="flex flex-col items-end gap-2">
@@ -58,12 +55,9 @@ export default function DeleteButton({
           className="max-w-xs text-right text-sm leading-5 text-red-500"
           aria-live="polite"
         >
-          Cannot delete this customer
-          <br />
-          because they have invoices.
+          {state.message}
         </p>
       )}
     </div>
   );
 }
-
