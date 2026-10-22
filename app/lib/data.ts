@@ -1,3 +1,4 @@
+
 import postgres from 'postgres';
 
 import {
@@ -175,11 +176,13 @@ export async function fetchInvoicesPages(query: string) {
 }
 
 export async function fetchInvoiceById(id: string) {
-  // Invalid UUIDs should return no invoice instead of querying the database.
+  // Return no invoice when the ID is not a UUID.
+  // This prevents invalid IDs from being sent to the database.
   const isValidUUID =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
 
   if (!isValidUUID) {
+    console.log('Invalid invoice UUID:', id);
     return undefined;
   }
 
@@ -191,7 +194,7 @@ export async function fetchInvoiceById(id: string) {
         invoices.amount,
         invoices.status
       FROM invoices
-      WHERE invoices.id = ${id};
+      WHERE invoices.id = ${id}
     `;
 
     if (data.length === 0) {
@@ -205,8 +208,11 @@ export async function fetchInvoiceById(id: string) {
       amount: invoice.amount / 100,
     };
   } catch (error) {
+    // Log the original error so Vercel Logs can reveal its cause.
     console.error('Database Error in fetchInvoiceById:', error);
-    throw new Error('Failed to fetch invoice.');
+
+    // Temporarily rethrow the original error for debugging.
+    throw error;
   }
 }
 
