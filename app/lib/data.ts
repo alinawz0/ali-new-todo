@@ -1,3 +1,4 @@
+
 export async function fetchInvoiceById(id: string) {
   try {
     const data = await sql<InvoiceForm[]>`
@@ -20,13 +21,12 @@ export async function fetchInvoiceById(id: string) {
       ...invoice,
       amount: invoice.amount / 100,
     };
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(
       'fetchInvoiceById original error:',
       error,
     );
 
-    // Original database error ko logs mein dekhne ke liye
     throw error;
   }
 }
