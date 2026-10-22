@@ -11,22 +11,14 @@ export async function fetchInvoiceById(id: string) {
       WHERE invoices.id = ${id};
     `;
 
-    if (data.length === 0) {
-      return undefined;
-    }
-
-    const invoice = data[0];
-
-    return {
+    const invoice = data.map((invoice) => ({
       ...invoice,
       amount: invoice.amount / 100,
-    };
-  } catch (error: unknown) {
-    console.error(
-      'fetchInvoiceById original error:',
-      error,
-    );
+    }));
 
-    throw error;
+    return invoice[0];
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch invoice.');
   }
 }
