@@ -1,3 +1,4 @@
+
 import postgres from 'postgres';
 
 import {
@@ -207,14 +208,21 @@ export async function fetchInvoiceById(id: string) {
       WHERE invoices.id = ${id};
     `;
 
-    const invoice = data.map((invoice) => ({
+    if (data.length === 0) {
+      return undefined;
+    }
+
+    const invoice = data[0];
+
+    return {
       ...invoice,
       amount: invoice.amount / 100,
-    }));
-
-    return invoice[0];
+    };
   } catch (error) {
-    console.error('Database Error:', error);
+    console.error(
+      'Database Error in fetchInvoiceById:',
+      error,
+    );
     throw new Error('Failed to fetch invoice.');
   }
 }
