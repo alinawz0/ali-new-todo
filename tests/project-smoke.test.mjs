@@ -19,3 +19,12 @@ test('architecture and security documentation are present', () => {
     assert.ok(text.trim().length > 100, path + ' must not be empty');
   }
 });
+
+
+test('login redirect rejects unsafe URL characters', () => {
+  const actions = readFileSync(new URL('../app/lib/actions.ts', import.meta.url), 'utf8');
+  assert.match(actions, /!redirectTo\.startsWith\('\/\/'\)/);
+  assert.match(actions, /!redirectTo\.includes\(String\.fromCharCode\(92\)\)/);
+  assert.match(actions, /!redirectTo\.includes\(String\.fromCharCode\(13\)\)/);
+  assert.match(actions, /!redirectTo\.includes\(String\.fromCharCode\(10\)\)/);
+});
