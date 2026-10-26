@@ -85,3 +85,8 @@ The review remains incomplete because database permissions, authenticated-user a
 The reviewed authentication checks and callback redirect validation have been added to local code. The unauthenticated endpoint tests passed in the tested environment, and the production build succeeded. The seed endpoint also has a production guard in local code.
 
 These results do not establish that the changes are deployed or that the application has full security approval. Outstanding authorization, database-permission, redirect, secret-history, and production checks must be completed before the review can be considered complete.
+
+## Follow-up Changes (26 October 2026)
+- The `/seed` HTTP route has been disabled and returns HTTP 404. This replaces the earlier non-production seeding behavior described above. Deployment and runtime verification remain pending.
+- `deleteCustomer` now accepts the `useActionState` previous-state and form-data arguments. Type-check and runtime verification remain pending.
+- These updates are committed only to the S2 pull-request branch; Production has not been changed.
