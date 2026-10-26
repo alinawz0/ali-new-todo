@@ -264,7 +264,11 @@ export async function updateCustomer(
    DELETE CUSTOMER
 ========================= */
 
-export async function deleteCustomer(id: string) {
+export async function deleteCustomer(
+  id: string,
+  _prevState: CustomerState,
+  _formData: FormData,
+): Promise<CustomerState> {
   await requireAuthenticatedUser();
 
   try {
