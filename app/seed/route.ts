@@ -6,7 +6,7 @@ import { invoices, customers, revenue, users } from '../lib/placeholder-data';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
-type Database = typeof sql;
+type Database = postgres.TransactionSql;
 
 async function seedUsers(db: Database) {
   await db`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
@@ -149,3 +149,5 @@ export async function GET() {
     );
   }
 }
+
+
