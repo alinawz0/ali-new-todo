@@ -28,6 +28,8 @@ jobs:
         run: pnpm test
       - name: Test coverage
         run: pnpm run test:coverage
+      - name: ESLint
+        run: pnpm lint
       - name: TypeScript check
         run: pnpm exec tsc --noEmit
       - name: Build
