@@ -1,4 +1,4 @@
-name: CI - Static Checks
+﻿name: CI - Static Checks
 
 on:
   push:
@@ -23,3 +23,6 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: TypeScript check
         run: pnpm exec tsc --noEmit
+
+      - name: Security guard regression tests
+        run: node --test tests/*.test.mjs
