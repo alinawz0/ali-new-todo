@@ -1,3 +1,5 @@
+﻿
+import { createClient } from '@/app/lib/server';
 import bcrypt from 'bcrypt';
 import postgres from 'postgres';
 import { invoices, customers, revenue, users } from '../lib/placeholder-data';
@@ -118,8 +120,23 @@ async function seedRevenue() {
 }
 
 export async function GET() {
+  // Prevent database seeding in production.
+  if (process.env.NODE_ENV === 'production') {
+    return Response.json({ error: 'Not found' }, { status: 404 });
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+
+  if (error || !user) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
-    const result = await sql.begin((sql) => [
+    await sql.begin((sql) => [
       seedUsers(),
       seedCustomers(),
       seedInvoices(),
@@ -127,7 +144,10 @@ export async function GET() {
     ]);
 
     return Response.json({ message: 'Database seeded successfully' });
-  } catch (error) {
-    return Response.json({ error }, { status: 500 });
+  } catch {
+    return Response.json(
+      { error: 'Failed to seed database' },
+      { status: 500 },
+    );
   }
 }
