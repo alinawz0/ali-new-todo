@@ -26,6 +26,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Automated tests
         run: pnpm test
+      - name: Test coverage
+        run: pnpm run test:coverage
       - name: TypeScript check
         run: pnpm exec tsc --noEmit
       - name: Build
