@@ -340,7 +340,10 @@ export async function authenticate(
   const destination =
     typeof redirectTo === 'string' &&
     redirectTo.startsWith('/') &&
-    !redirectTo.startsWith('//')
+    !redirectTo.startsWith('//') &&
+    !redirectTo.includes(String.fromCharCode(92)) &&
+    !redirectTo.includes(String.fromCharCode(13)) &&
+    !redirectTo.includes(String.fromCharCode(10))
       ? redirectTo
       : '/dashboard';
 
