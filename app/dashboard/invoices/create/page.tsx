@@ -4,6 +4,9 @@ import Form from '@/app/ui/invoices/create-form';
 import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
 import { fetchCustomers } from '@/app/lib/data';
 
+// Fetch customer data at request time rather than during Vercel build.
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Create Invoice',
 };
