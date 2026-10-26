@@ -5,7 +5,8 @@
     "dev": "next dev --turbopack",
     "start": "next start",
     "test": "node --test tests/*.test.mjs",
-    "test:coverage": "node --experimental-test-coverage --test tests/*.test.mjs"
+    "test:coverage": "node --experimental-test-coverage --test tests/*.test.mjs",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@auth/core": "^0.41.3",
@@ -32,7 +33,9 @@
     "@types/bcrypt": "^5.0.2",
     "@types/node": "22.10.7",
     "@types/react": "19.0.7",
-    "@types/react-dom": "19.0.3"
+    "@types/react-dom": "19.0.3",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.0.10"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
