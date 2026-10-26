@@ -1,4 +1,4 @@
-﻿
+
 import postgres from 'postgres';
 
 import {
@@ -360,4 +360,3 @@ export async function getUser(
     throw new Error('Failed to fetch user.');
   }
 }
-
