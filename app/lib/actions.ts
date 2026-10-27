@@ -1,4 +1,4 @@
-
+﻿
 'use server';
 
 import { z } from 'zod';
@@ -13,7 +13,7 @@ const FormSchema = z.object({
   id: z.string(),
 
   customerId: z.string({
-    invalid_type_error: 'Please select a customer.',
+    error: 'Please select a customer.',
   }),
 
   amount: z.coerce
@@ -21,7 +21,7 @@ const FormSchema = z.object({
     .gt(0, { message: 'Please enter an amount greater than $0.' }),
 
   status: z.enum(['pending', 'paid'], {
-    invalid_type_error: 'Please select an invoice status.',
+    error: 'Please select an invoice status.',
   }),
 
   date: z.string(),
@@ -46,10 +46,21 @@ export type State = {
   message?: string | null;
 };
 
+
+async function requireAuthenticatedUser() {
+  const supabase = await createClient();
+  const { data: { user }, error } = await supabase.auth.getUser();
+
+  if (error || !user) {
+    redirect('/login');
+  }
+}
 export async function createInvoice(
   prevState: State,
   formData: FormData,
 ) {
+  await requireAuthenticatedUser();
+
   const validatedFields = CreateInvoice.safeParse({
     customerId: formData.get('customerId'),
     amount: formData.get('amount'),
@@ -89,6 +100,8 @@ export async function updateInvoice(
   id: string,
   formData: FormData,
 ) {
+  await requireAuthenticatedUser();
+
   const { customerId, amount, status } = UpdateInvoice.parse({
     customerId: formData.get('customerId'),
     amount: formData.get('amount'),
@@ -110,6 +123,8 @@ export async function updateInvoice(
 }
 
 export async function deleteInvoice(id: string) {
+  await requireAuthenticatedUser();
+
   await sql`
     DELETE FROM invoices
     WHERE id = ${id}
@@ -144,6 +159,8 @@ export async function createCustomer(
   prevState: CustomerState,
   formData: FormData,
 ) {
+  await requireAuthenticatedUser();
+
   const validatedFields = CreateCustomer.safeParse({
     name: formData.get('name'),
     email: formData.get('email'),
@@ -195,6 +212,8 @@ export async function updateCustomer(
   prevState: CustomerState,
   formData: FormData,
 ) {
+  await requireAuthenticatedUser();
+
   const validatedFields = CreateCustomer.safeParse({
     name: formData.get('name'),
     email: formData.get('email'),
@@ -245,7 +264,13 @@ export async function updateCustomer(
    DELETE CUSTOMER
 ========================= */
 
-export async function deleteCustomer(id: string) {
+export async function deleteCustomer(
+  id: string,
+  prevState: CustomerState,
+  formData: FormData,
+) {
+  await requireAuthenticatedUser();
+
   try {
     const invoices = await sql`
       SELECT id
@@ -321,3 +346,4 @@ export async function authenticate(
 
   redirect(destination);
 }
+

@@ -211,7 +211,7 @@ export async function fetchInvoiceById(id: string) {
     // Log the original error so Vercel Logs can reveal its cause.
     console.error('Database Error in fetchInvoiceById:', error);
 
-    // Temporarily rethrow the original error for debugging.
+    // Preserve the original database error for server-side logging.
     throw error;
   }
 }
